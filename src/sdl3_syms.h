@@ -75,7 +75,7 @@ SDL3_SYM_RENAMED_RETCODE(bool,GDKGetDefaultUser,GetGDKDefaultUser,(XUserHandle *
 #endif
 #ifdef SDL_PLATFORM_IOS
 SDL3_SYM_RENAMED_RETCODE(bool,iPhoneSetAnimationCallback,SetiOSAnimationCallback,(SDL_Window *a, int b, SDL_iOSAnimationCallback c, void *d),(a,b,c,d),return)
-SDL3_SYM(void,iPhoneSetEventPump,SetiOSEventPump,(bool a),(a),)
+SDL3_SYM(void,SetiOSEventPump,(bool a),(a),)
 SDL3_SYM_PASSTHROUGH(void,OnApplicationDidChangeStatusBarOrientation,(void),(),)
 #endif
 #ifdef SDL_PLATFORM_LINUX

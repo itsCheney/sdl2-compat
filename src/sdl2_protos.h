@@ -64,7 +64,7 @@ SDL2_PROTO(IDirect3DDevice9*,RenderGetD3D9Device,(SDL_Renderer *a))
 #endif
 
 #ifdef SDL_PLATFORM_IOS
-SDL2_PROTO(int,iPhoneSetAnimationCallback,(SDL_Window *a, int b, void (SDLCALL *c)(void *))
+SDL2_PROTO(int,iPhoneSetAnimationCallback,(SDL_Window *a, int b, void (SDLCALL *c)(void *), void *d))
 SDL2_PROTO(void,iPhoneSetEventPump,(SDL2_bool a))
 #endif
 

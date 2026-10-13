@@ -207,8 +207,19 @@ do { \
         SDL3_free(ptr);               \
     }
 
+#ifdef SDL_PLATFORM_IOS
+/* iOS has no desktop OpenGL headers; GLES 2 provides the GL types used here. */
+#include <SDL3/SDL_opengles2.h>
+#ifndef GLAPIENTRY
+#define GLAPIENTRY GL_APIENTRY
+#endif
+#define GL_TEXTURE0_ARB GL_TEXTURE0
+#define GL_TEXTURE1_ARB GL_TEXTURE1
+#define GL_TEXTURE2_ARB GL_TEXTURE2
+#else
 #include <SDL3/SDL_opengl.h>
 #include <SDL3/SDL_opengl_glext.h>
+#endif
 
 /* !!! FIXME: collect all the properties in one place near the top of the source file */
 #define PROP_WINDOW_BRIGHTNESS "sdl2-compat.window.brightness"
