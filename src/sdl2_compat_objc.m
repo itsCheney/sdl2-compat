@@ -19,9 +19,42 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-/* This file contains some macOS-specific support code */
+/* This file contains some Apple-specific support code */
 
 #if defined(__APPLE__)
+#include <TargetConditionals.h>
+#endif
+
+#if defined(__APPLE__) && TARGET_OS_IPHONE
+#include <Foundation/Foundation.h>
+
+#if __GNUC__ >= 4
+#define SDL2_PRIVATE __attribute__((visibility("hidden")))
+#else
+#define SDL2_PRIVATE __private_extern__
+#endif
+
+SDL2_PRIVATE void SDL2Compat_NSLog(const char *prefix, const char *text)
+{
+    @autoreleasepool {
+        NSString *nsText = [NSString stringWithUTF8String:text];
+        if (prefix && *prefix) {
+            NSString *nsPrefix = [NSString stringWithUTF8String:prefix];
+            NSLog(@"%@%@", nsPrefix, nsText);
+        } else {
+            NSLog(@"%@", nsText);
+        }
+    }
+}
+
+/* This runs before main(), when UIKit can't present an alert yet, so the
+   reason only goes to the system log before the process aborts. */
+SDL2_PRIVATE void error_dialog(const char *errorMsg)
+{
+    SDL2Compat_NSLog("sdl2-compat fatal error: ", errorMsg);
+}
+
+#elif defined(__APPLE__)
 #include <Cocoa/Cocoa.h>
 
 #if __GNUC__ >= 4

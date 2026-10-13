@@ -393,6 +393,31 @@ static char loaderror[256];
     #define LoadSDL3Library() ((Loaded_SDL3 = LoadLibraryA(SDL3_LIBNAME)) != NULL)
     #define LookupSDL3Sym(sym) (void *)GetProcAddress(Loaded_SDL3, sym)
     #define CloseSDL3Library() { if (Loaded_SDL3) { FreeLibrary(Loaded_SDL3); Loaded_SDL3 = NULL; } }
+#elif defined(__APPLE__) && TARGET_OS_IPHONE
+    /* iOS, tvOS and visionOS apps ship SDL3 as an embedded, flat framework
+       (no Versions/A) in the app bundle's Frameworks directory. */
+    #include <dlfcn.h>
+    #define SDL3_FRAMEWORK "SDL3.framework/SDL3"
+    static void *Loaded_SDL3 = NULL;
+    #define LookupSDL3Sym(sym) dlsym(Loaded_SDL3, sym)
+    #define CloseSDL3Library() { if (Loaded_SDL3) { dlclose(Loaded_SDL3); Loaded_SDL3 = NULL; } }
+    static bool LoadSDL3Library(void) {
+        static const char * const dylib_locations[] = {
+            "@rpath/" SDL3_FRAMEWORK, /* whatever the loading image's runpaths name */
+            "@executable_path/Frameworks/" SDL3_FRAMEWORK, /* MyApp.app/Frameworks/SDL3.framework */
+            "@loader_path/../" SDL3_FRAMEWORK /* sdl2-compat linked into a sibling framework */
+        };
+
+        int i;
+        for (i = 0; i < (int) SDL_arraysize(dylib_locations); i++) {
+            Loaded_SDL3 = dlopen(dylib_locations[i], RTLD_LOCAL|RTLD_NOW);
+            if (Loaded_SDL3) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 #elif defined(__APPLE__)
     #include <dlfcn.h>
     #include <pwd.h>
